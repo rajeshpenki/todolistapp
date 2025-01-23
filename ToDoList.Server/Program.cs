@@ -1,5 +1,7 @@
 using ToDoList.Server.Model;
 using ToDoList.Server.Repository;
+using ToDoList.Server.Business;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,8 +12,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-builder.Services.AddSingleton<ToDoListDBContext>();
+builder.Services.AddSingleton<IDataStorage<ToDoTask>, InMemoryDataStorage<ToDoTask>>();
+builder.Services.AddSingleton<IToDoListDBContext, ToDoListDBContext>();
 builder.Services.AddSingleton<IToDoListRepo, ToDoListRepo>();
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 builder.Services.AddCors(options =>

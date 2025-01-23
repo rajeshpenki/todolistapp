@@ -8,7 +8,6 @@ namespace ToDoList.Server.Repository
 
         bool AddTask(ToDoTask task);
 
-
         bool DeleteTask(int id);
 
         bool UpdateTask(ToDoTask task);       

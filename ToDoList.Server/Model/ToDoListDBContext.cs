@@ -1,88 +1,81 @@
-﻿using System.Data;
-using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using ToDoList.Server.Business;
+using ToDoList.Server.Repository;
 
 namespace ToDoList.Server.Model
 {
-    public class ToDoListDBContext
+    public class ToDoListDBContext : IToDoListDBContext
     {
+        private readonly IDataStorage<ToDoTask> _dataStorage;
 
-        private List<ToDoTask> DbDataSet { get; set; }
-
-        public ToDoListDBContext() {
-
-            DbDataSet =  new List<ToDoTask>();
+        public ToDoListDBContext(IDataStorage<ToDoTask> dataStorage)
+        {
+            _dataStorage = dataStorage;
         }
-
 
         public List<ToDoTask> GetTasks()
         {
-            return DbDataSet;
+            return _dataStorage.GetAll();
         }
 
         public bool AddTask(ToDoTask task)
         {
-            bool retunrvalue = false;
             try
             {
-                if (DbDataSet.Where(item => item.Id == task.Id).Count()== 0)
+                if (_dataStorage.GetAll().All(item => item.Id != task.Id))
                 {
-                    var maxvalue = DbDataSet.OrderByDescending(item => item.Id).FirstOrDefault();
-                    var id = maxvalue != null ? maxvalue.Id + 1 : 1;
-                    task.Id = id;
-                    DbDataSet.Add(task);
-                    retunrvalue = true;
+                    var maxId = _dataStorage.GetAll().OrderByDescending(item => item.Id).FirstOrDefault()?.Id ?? 0;
+                    task.Id = maxId + 1;
+                    _dataStorage.Add(task);
+                    return true;
                 }
             }
-            catch(Exception ex)
+            catch (Exception)
             {
-                retunrvalue = false;
+                return false;
             }
 
-            return retunrvalue;
+            return false;
         }
 
         public bool DeleteTask(int id)
         {
-            bool retunrvalue = false;
             try
             {
-                var item = DbDataSet.Where(item => item.Id == id).FirstOrDefault();
-                if (item != null)
+                var task = _dataStorage.GetAll().FirstOrDefault(item => item.Id == id);
+                if (task != null)
                 {
-                    DbDataSet.Remove(item);
-
-                    retunrvalue = true;
+                    _dataStorage.Remove(task);
+                    return true;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                retunrvalue = false;
+                return false;
             }
 
-            return retunrvalue;
+            return false;
         }
-
 
         public bool UpdateTask(ToDoTask task)
         {
-            bool retunrvalue = false;
             try
             {
-                var item = DbDataSet.Where(item => item.Id == task.Id).FirstOrDefault();
-                if (item != null)
+                var existingTask = _dataStorage.GetAll().FirstOrDefault(item => item.Id == task.Id);
+                if (existingTask != null)
                 {
-                    item.Completed = task.Completed;
-                    item.Name = task.Name;
-                    retunrvalue = true;
+                    _dataStorage.Update(task);
+                    return true;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                retunrvalue = false;
+                return false;
             }
 
-            return retunrvalue;
+            return false;
         }
     }
 }

@@ -5,9 +5,8 @@ namespace ToDoList.Server.Repository
 {
     public class ToDoListRepo : IToDoListRepo
     {
-
-        ToDoListDBContext _context;
-        public ToDoListRepo(ToDoListDBContext context) 
+        public readonly IToDoListDBContext _context;
+        public ToDoListRepo(IToDoListDBContext context) 
         {
             _context = context;
         }
