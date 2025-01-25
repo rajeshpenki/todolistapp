@@ -4,9 +4,12 @@ namespace ToDoList.Server.Model
 {
     public interface IDataStorage<T>
     {
-        List<T> GetAll();
-        void Add(T item);
-        void Remove(T item);
-        void Update(T item);
+        Task<List<T>> GetAll();
+        
+        Task<bool> Add(T item);
+
+        Task<bool> Remove(T item);
+
+        Task<bool> Update(T item);
     }
 }

@@ -5,31 +5,64 @@ namespace ToDoList.Server.Model
 {
     public class InMemoryDataStorage<T> : IDataStorage<T> where T : class
     {
-        private readonly List<T> _items = new List<T>();
+        private readonly List<T> _items;
 
-        public List<T> GetAll()
+        private readonly ILogger<InMemoryDataStorage<T>> _logger;
+
+        public InMemoryDataStorage(ILogger<InMemoryDataStorage<T>> logger)
         {
-            return _items;
+            _items = new List<T>();
+            _logger = logger;
+        }        
+
+        public async Task<List<T>> GetAll()
+        {
+            return await Task.FromResult(_items);
         }
 
-        public void Add(T item)
+        public async Task<bool> Add(T item)
         {
-            _items.Add(item);
-        }
-
-        public void Remove(T item)
-        {
-            _items.Remove(item);
-        }
-
-        public void Update(T item)
-        {
-            var existingItem = _items.FirstOrDefault(i => i.Equals(item));
-            if (existingItem != null)
+            var returnvalue = false;
+            try
             {
-                _items.Remove(existingItem);
                 _items.Add(item);
+                returnvalue = true;
             }
+            catch (Exception ex) { 
+            returnvalue = false; 
+            _logger.LogError(ex, "Error in Add method"); }
+            return await Task.FromResult(returnvalue);
+        }
+
+        public async Task<bool> Remove(T item)
+        {
+            var returnvalue = false;
+            try
+            {
+                _items.Remove(item);
+                returnvalue = true;
+            }
+            catch (Exception ex) {  returnvalue = false; 
+            _logger.LogError(ex, "Error in Add method"); }
+            return await Task.FromResult(returnvalue);            
+        }
+
+        public async Task<bool> Update(T item)
+        {
+            var returnvalue = false;
+
+            try
+            {
+                var existingItem = _items.FirstOrDefault(i => i.Equals(item));
+                if (existingItem != null)
+                {
+                    _items.Remove(existingItem);
+                    _items.Add(item);
+                }
+            }
+            catch (Exception ex){  returnvalue = false; 
+            _logger.LogError(ex, "Error in Add method"); }
+            return await Task.FromResult(returnvalue);          
         }
     }
 }

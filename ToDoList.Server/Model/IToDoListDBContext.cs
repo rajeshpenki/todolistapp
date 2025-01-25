@@ -5,13 +5,13 @@ namespace ToDoList.Server.Model
     public interface IToDoListDBContext
     {
 
-        List<ToDoTask> GetTasks();
+        Task<List<ToDoTask>> GetTasks();
 
-        bool AddTask(ToDoTask task);
+        Task<bool> AddTask(ToDoTask task);
 
-        bool DeleteTask(int id);
+        Task<bool> DeleteTask(int id);
 
-        bool UpdateTask(ToDoTask task);
+        Task<bool> UpdateTask(ToDoTask task);
 
     }
 }

@@ -3,6 +3,7 @@ using Moq;
 using ToDoList.Server.Business;
 using ToDoList.Server.Model;
 using Xunit;
+using Microsoft.Extensions.Logging;
 
 namespace ToDoList.Server.Test.Model
 {
@@ -10,15 +11,17 @@ namespace ToDoList.Server.Test.Model
     {
         private readonly Mock<IDataStorage<ToDoTask>> _mockDataStorage;
         private readonly ToDoListDBContext _context;
+        private readonly Mock<ILogger<ToDoListDBContext>> _mockLogger;
 
         public ToDoListDBContextTest()
         {
+            _mockLogger = new Mock<ILogger<ToDoListDBContext>>();
             _mockDataStorage = new Mock<IDataStorage<ToDoTask>>();
-            _context = new ToDoListDBContext(_mockDataStorage.Object);
+            _context = new ToDoListDBContext(_mockDataStorage.Object, _mockLogger.Object);
         }
 
         [Fact]
-        public void GetTasks_ShouldReturnAllTasks()
+        public async Task GetTasks_ShouldReturnAllTasks()
         {
             // Arrange
             var tasks = new List<ToDoTask>
@@ -26,25 +29,25 @@ namespace ToDoList.Server.Test.Model
                 new ToDoTask { Id = 1, Name = "Task 1", Completed = false },
                 new ToDoTask { Id = 2, Name = "Task 2", Completed = true }
             };
-            _mockDataStorage.Setup(ds => ds.GetAll()).Returns(tasks);
+            _mockDataStorage.Setup(ds => ds.GetAll()).Returns(Task.FromResult(tasks));
 
             // Act
-            var result = _context.GetTasks();
+            var result = await _context.GetTasks();
 
             // Assert
             Assert.Equal(tasks, result);
         }
 
         [Fact]
-        public void AddTask_ShouldAddTask()
+        public async Task AddTask_ShouldAddTask()
         {
             // Arrange
             var task = new ToDoTask { Name = "Task 1", Completed = false };
-            _mockDataStorage.Setup(ds => ds.GetAll()).Returns(new List<ToDoTask>());
+            _mockDataStorage.Setup(ds => ds.GetAll()).Returns(Task.FromResult(new List<ToDoTask>()));
             _mockDataStorage.Setup(ds => ds.Add(task));
 
             // Act
-            var result = _context.AddTask(task);
+            var result = await _context.AddTask(task);
 
             // Assert
             Assert.True(result);
@@ -52,15 +55,15 @@ namespace ToDoList.Server.Test.Model
         }
 
         [Fact]
-        public void AddTask_ShouldNotAddDuplicateTask()
+        public async Task AddTask_ShouldNotAddDuplicateTask()
         {
             // Arrange
             var task = new ToDoTask { Id = 1, Name = "Task 1", Completed = false };
             var tasks = new List<ToDoTask> { task };
-            _mockDataStorage.Setup(ds => ds.GetAll()).Returns(tasks);
+            _mockDataStorage.Setup(ds => ds.GetAll()).Returns(Task.FromResult(tasks));
 
             // Act
-            var result = _context.AddTask(task);
+            var result = await _context.AddTask(task);
 
             // Assert
             Assert.False(result);
@@ -68,16 +71,16 @@ namespace ToDoList.Server.Test.Model
         }
 
         [Fact]
-        public void DeleteTask_ShouldDeleteTask()
+        public async Task DeleteTask_ShouldDeleteTask()
         {
             // Arrange
             var task = new ToDoTask { Id = 1, Name = "Task 1", Completed = false };
             var tasks = new List<ToDoTask> { task };
-            _mockDataStorage.Setup(ds => ds.GetAll()).Returns(tasks);
+            _mockDataStorage.Setup(ds => ds.GetAll()).Returns(Task.FromResult(tasks));
             _mockDataStorage.Setup(ds => ds.Remove(task));
 
             // Act
-            var result = _context.DeleteTask(task.Id);
+            var result = await _context.DeleteTask(task.Id);
 
             // Assert
             Assert.True(result);
@@ -85,17 +88,17 @@ namespace ToDoList.Server.Test.Model
         }
 
         [Fact]
-        public void UpdateTask_ShouldUpdateTask()
+        public async Task UpdateTask_ShouldUpdateTask()
         {
             // Arrange
             var task = new ToDoTask { Id = 1, Name = "Task 1", Completed = false };
             var updatedTask = new ToDoTask { Id = 1, Name = "Updated Task", Completed = true };
             var tasks = new List<ToDoTask> { task };
-            _mockDataStorage.Setup(ds => ds.GetAll()).Returns(tasks);
+            _mockDataStorage.Setup(ds => ds.GetAll()).Returns(Task.FromResult(tasks));
             _mockDataStorage.Setup(ds => ds.Update(updatedTask));
 
             // Act
-            var result = _context.UpdateTask(updatedTask);
+            var result = await _context.UpdateTask(updatedTask);
 
             // Assert
             Assert.True(result);

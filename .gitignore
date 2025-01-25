@@ -25,3 +25,6 @@ yarn-error.log*
 /ToDoList.Server/obj
 /.vs
 node_modules/
+**/obj/
+**/bin/
+**/[Dd]ebug/

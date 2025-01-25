@@ -28,10 +28,10 @@ namespace ToDoList.Tests.Controllers
         {
             // Arrange
             var tasks = new List<ToDoTask> { new ToDoTask { Id = 1, Name = "Test Task", Completed = false } };
-            _mockRepo.Setup(repo => repo.GetAllTaskList()).Returns(tasks);
+            _mockRepo.Setup(repo => repo.GetAllTaskList()).Returns(Task.FromResult(tasks));
 
             // Act
-            var result = _controller.GetTask();
+            var result = _controller.GetTask().Result;
 
             // Assert
             Assert.Equal(tasks.Count, result.Count);
@@ -45,10 +45,10 @@ namespace ToDoList.Tests.Controllers
         {
             // Arrange
             var taskDto = new TaskDTO { Name = "Test Task", Completed = false };
-            _mockRepo.Setup(repo => repo.AddTask(It.IsAny<ToDoTask>())).Returns(true);
+            _mockRepo.Setup(repo => repo.AddTask(It.IsAny<ToDoTask>())).Returns(Task.FromResult(true));
 
             // Act
-            var result = _controller.AddTask(taskDto);
+            var result = _controller.AddTask(taskDto).Result;
 
             // Assert
             Assert.True(result);
@@ -59,10 +59,10 @@ namespace ToDoList.Tests.Controllers
         {
             // Arrange
             var taskId = 1;
-            _mockRepo.Setup(repo => repo.DeleteTask(taskId)).Returns(true);
+            _mockRepo.Setup(repo => repo.DeleteTask(taskId)).Returns(Task.FromResult(true));
 
             // Act
-            var result = _controller.DeleteTask(taskId);
+            var result = _controller.DeleteTask(taskId).Result;
 
             // Assert
             Assert.True(result);
@@ -73,10 +73,10 @@ namespace ToDoList.Tests.Controllers
         {
             // Arrange
             var taskDto = new TaskDTO { Id = 1, Name = "Updated Task", Completed = true };
-            _mockRepo.Setup(repo => repo.UpdateTask(It.IsAny<ToDoTask>())).Returns(true);
+            _mockRepo.Setup(repo => repo.UpdateTask(It.IsAny<ToDoTask>())).Returns(Task.FromResult(true));
 
             // Act
-            var result = _controller.UpdateTask(taskDto);
+            var result = _controller.UpdateTask(taskDto).Result;
 
             // Assert
             Assert.True(result);

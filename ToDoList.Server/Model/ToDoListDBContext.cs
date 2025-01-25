@@ -10,72 +10,81 @@ namespace ToDoList.Server.Model
     {
         private readonly IDataStorage<ToDoTask> _dataStorage;
 
-        public ToDoListDBContext(IDataStorage<ToDoTask> dataStorage)
+        private readonly ILogger<ToDoListDBContext> _logger;
+
+        public ToDoListDBContext(IDataStorage<ToDoTask> dataStorage, ILogger<ToDoListDBContext> logger)
         {
             _dataStorage = dataStorage;
+            _logger = logger;
         }
 
-        public List<ToDoTask> GetTasks()
+        public Task<List<ToDoTask>> GetTasks()
         {
             return _dataStorage.GetAll();
         }
 
-        public bool AddTask(ToDoTask task)
+        public async Task<bool> AddTask(ToDoTask task)
         {
+            var returnvalue = false;
             try
             {
-                if (_dataStorage.GetAll().All(item => item.Id != task.Id))
+                var tasks = await _dataStorage.GetAll();
+                if (tasks.All(item => item.Id != task.Id))
                 {
-                    var maxId = _dataStorage.GetAll().OrderByDescending(item => item.Id).FirstOrDefault()?.Id ?? 0;
+                    var maxId = tasks.OrderByDescending(item => item.Id).FirstOrDefault()?.Id ?? 0;
                     task.Id = maxId + 1;
-                    _dataStorage.Add(task);
-                    return true;
+                    await _dataStorage.Add(task);
+                    returnvalue = true;
                 }
             }
             catch (Exception)
             {
-                return false;
+                returnvalue = false;
             }
 
-            return false;
+            return returnvalue;
         }
 
-        public bool DeleteTask(int id)
+        public async Task<bool>  DeleteTask(int id)
         {
+            var returnvalue = false;
             try
             {
-                var task = _dataStorage.GetAll().FirstOrDefault(item => item.Id == id);
+                var tasks = await _dataStorage.GetAll();
+                var task = tasks.FirstOrDefault(item => item.Id == id);
                 if (task != null)
                 {
-                    _dataStorage.Remove(task);
-                    return true;
+                    await _dataStorage.Remove(task);
+                    returnvalue = true;
                 }
             }
             catch (Exception)
             {
-                return false;
+                returnvalue = false;
             }
 
-            return false;
+            return returnvalue;
         }
 
-        public bool UpdateTask(ToDoTask task)
+        public async Task<bool>  UpdateTask(ToDoTask task)
         {
+            var returnvalue = false;            
             try
             {
-                var existingTask = _dataStorage.GetAll().FirstOrDefault(item => item.Id == task.Id);
+                var tasks = await _dataStorage.GetAll();
+                var existingTask = tasks.FirstOrDefault(item => item.Id == task.Id);
                 if (existingTask != null)
                 {
-                    _dataStorage.Update(task);
-                    return true;
+                    await _dataStorage.Update(task);
+                    returnvalue = true;
                 }
             }
             catch (Exception)
             {
-                return false;
+                returnvalue= false;
             }
 
-            return false;
+            return returnvalue;
         }
     }
 }

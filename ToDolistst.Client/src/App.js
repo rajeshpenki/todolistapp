@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import TodoItem from './components/TodoItem';
 import './styles/App.css';
+import config from './config';
 
 function App() {
   const [todos, setTodos] = useState([]);
@@ -13,7 +14,7 @@ function App() {
 
   const fetchTasks = async () => {
     try {
-      const response = await fetch('https://localhost:7018/api/tasks');
+      const response = await fetch(config.apiUrl);
       const data = await response.json();
       setTodos(data);
     } catch (error) {
@@ -24,7 +25,7 @@ function App() {
   const addTodo = async () => {
     if (inputValue.trim()) {
       try {
-        const response = await fetch('https://localhost:7018/api/tasks', {
+        const response = await fetch(config.apiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -46,7 +47,7 @@ function App() {
     const todo = todos.find((todo) => todo.id === id);
     if (todo) {
       try {
-        const response = await fetch(`https://localhost:7018/api/tasks/updatetask`, {
+        const response = await fetch(`${config.apiUrl}/updatetask`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -64,7 +65,7 @@ function App() {
 
   const removeTodo = async (id) => {
     try {
-      await fetch(`https://localhost:7018/api/tasks/${id}`, {
+      await fetch(`${config.apiUrl}/${id}`, {
         method: 'DELETE',
       });
       setTodos(todos.filter((todo) => todo.id !== id));
@@ -78,7 +79,7 @@ function App() {
     const todo = todos.find((todo) => todo.id === id);
     if (todo) {
       try {
-        const response = await fetch(`https://localhost:7018/api/tasks/updatetask`, {
+        const response = await fetch(`${config.apiUrl}/updatetask`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -120,7 +121,7 @@ function App() {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="Add a new todo"
-            style={{ width: '80%' }}
+            className="responsive-width"
         />
         <button className="add-todo-button" onClick={addTodo}>  <i className="fas fa-plus"></i></button>
       </div>      

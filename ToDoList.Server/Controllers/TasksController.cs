@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ToDoList.Server.Business;
 using ToDoList.Server.DTO;
@@ -21,33 +22,35 @@ namespace ToDoList.Server.Controllers
         }
 
         [HttpGet()]
-        public List<TaskDTO> GetTask()
+        public async Task<List<TaskDTO>> GetTask()
         {
-            return _dolistRepo.GetAllTaskList().Select(item => new TaskDTO() { Id = item.Id,Name = item.Name, Completed = item.Completed }).ToList();
+              var tasks = await _dolistRepo.GetAllTaskList();
+            return tasks.Select(item => new TaskDTO { Id = item.Id, Name = item.Name, Completed = item.Completed }).ToList();
         }
 
         [HttpPost()]
-        public bool AddTask(TaskDTO task)
+        public async Task<bool> AddTask(TaskDTO task)
         {
             var newtask = new ToDoTask() { Name = task.Name, Completed = task.Completed };
-            return _dolistRepo.AddTask(newtask);
+            var tasks = await _dolistRepo.AddTask(newtask);
+            return tasks;
         }
 
         
 
         [HttpDelete("{id}")]
-        public bool DeleteTask(int id)
+        public async Task<bool> DeleteTask(int id)
         {
             
-            return _dolistRepo.DeleteTask(id);
+            return await _dolistRepo.DeleteTask(id);
         }
 
 
         [HttpPost("UpdateTask")]
-        public bool UpdateTask(TaskDTO task)
+        public async Task<bool> UpdateTask(TaskDTO task)
         {
             var updatetask = new ToDoTask() { Id = task.Id , Name = task.Name, Completed = task.Completed };
-            return _dolistRepo.UpdateTask(updatetask);
+            return await _dolistRepo.UpdateTask(updatetask);
         }
     }
 }

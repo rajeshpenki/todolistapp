@@ -4,12 +4,12 @@ namespace ToDoList.Server.Repository
 {
     public interface IToDoListRepo
     {
-        List<ToDoTask> GetAllTaskList();
+        Task<List<ToDoTask>> GetAllTaskList();
 
-        bool AddTask(ToDoTask task);
+        Task<bool>  AddTask(ToDoTask task);
 
-        bool DeleteTask(int id);
+        Task<bool>  DeleteTask(int id);
 
-        bool UpdateTask(ToDoTask task);       
+        Task<bool>  UpdateTask(ToDoTask task);       
     }
 }

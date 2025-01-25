@@ -167,3 +167,22 @@ body {
     justify-content: space-between;    
     height: 20px;
   }
+
+  /* Default width for larger screens */
+.responsive-width {
+  width: 80%;
+}
+
+/* Width for tablets */
+@media (max-width: 768px) {
+  .responsive-width {
+    width: 90%;
+  }
+}
+
+/* Width for mobile devices */
+@media (max-width: 480px) {
+  .responsive-width {
+    width: 100%;
+  }
+}

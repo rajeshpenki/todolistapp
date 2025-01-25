@@ -11,24 +11,24 @@ namespace ToDoList.Server.Repository
             _context = context;
         }
 
-        public List<ToDoTask> GetAllTaskList()
+        public async Task<List<ToDoTask>> GetAllTaskList()
         {
-            return _context.GetTasks();
+            return await _context.GetTasks();
         }
 
-        public bool AddTask(ToDoTask task) {
+        public async Task<bool> AddTask(ToDoTask task) {
 
-            return _context.AddTask(task); ;
+            return await _context.AddTask(task);
         }
 
-        public bool DeleteTask(int id) {
+        public async Task<bool> DeleteTask(int id) {
 
-            return _context.DeleteTask(id); ; ;
+            return await _context.DeleteTask(id);
         }
 
-        public bool UpdateTask(ToDoTask task) {
+        public async Task<bool> UpdateTask(ToDoTask task) {
 
-            return _context.UpdateTask(task); ; ;
+            return await _context.UpdateTask(task);
         }
     }
 }
